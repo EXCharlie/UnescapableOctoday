@@ -1,24 +1,19 @@
-# charlie
+# 无法逃离的星期八 | Unescapable Octoday
 
-## Project setup
-```
-npm install
-```
+> “他总觉得，自己衣服的每一道褶皱里都藏着那个老太婆的血。”
+> ——陀思妥耶夫斯基《罪与罚》
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
 
-### Lints and fixes files
-```
-npm run lint
-```
+[这是一个基于Vue框架开发的作品集网页，用于展示「无法逃离的星期八」系列作品。  ](https://excharlie.github.io/UnescapableOctoday/)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## 关于系列作品
+「无法逃离的星期八」是由**高二8班（2026届）** 创作的系列作品。
+
+这场仿佛没有尽头的「星期八」，最终成为顾醒直面内心阴影、完成自我救赎的契机。作品以青春成长为底色，探讨了愧疚、共情与救赎的深层主题，通过循环时空的设定，放大了少年内心的挣扎与转变。
+
+
+## 系列作品组成
+- **微视频**：以影像语言呈现顾醒的循环经历与心理变化，聚焦情绪张力与叙事节奏。
+- **互动游戏**：让观众以第一视角代入顾醒的处境，在选择与探索中更深刻地感受时空循环的压迫感与自我救赎的重量。（目前体验不佳，缺失人工写手为该作品进行互动小说创作）
