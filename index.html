@@ -463,6 +463,67 @@
       display: block;
     }
 
+    .quote-audio-row {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-top: 4rem;
+    }
+
+    .circle-audio-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--fg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+    }
+
+    .circle-audio-btn:hover {
+      background: var(--fg);
+      color: var(--bg);
+      border-color: var(--fg);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+    }
+
+    .circle-audio-btn svg {
+      width: 10px;
+      height: 10px;
+      fill: currentColor;
+      display: block;
+    }
+
+    .circle-audio-btn .icon-play {
+      transform: translateX(1px);
+    }
+
+    .circle-audio-btn .icon-pause {
+      display: none;
+    }
+
+    .circle-audio-btn.playing .icon-play {
+      display: none;
+    }
+
+    .circle-audio-btn.playing .icon-pause {
+      display: block;
+    }
+
+    .voiceover-label {
+      font-size: 0.7rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.08em;
+      font-weight: 300;
+    }
+
     .quote-desk-figure {
       position: absolute;
       right: clamp(1rem, 6vw, 5.5rem);
@@ -753,11 +814,10 @@
             </div>
           </div>
           <p class="story-paragraph" data-i18n="originP1">
-            A small spark of inspiration emerged during class — a time loop trap. The concept fascinated me immediately. I had long wanted to gather classmates to film a short film, and video production was an entirely new field for me. After discussing the idea with several peers, everyone agreed the story was worth making. The team was deeply united: creative members shared ideas, willing actors sacrificed their weekends for shooting, and a physics teacher also made a guest appearance. Together, we completed the final film.
+           A spark of inspiration struck in class: a time loop trap. I was immediately fascinated. I’d long wanted to shoot a short film with classmates, and filmmaking was brand new to me. My peers loved the concept. Our team collaborated closely: creators brainstormed, actors gave up weekends for filming, and a physics teacher guest-starred. We finished the film together.
           </p>
           <p class="story-paragraph" data-i18n="originP2">
-            The Unescapable Eighth Day of the Week was originally submitted for the school’s Science and Culture Art Festival. Few expected Class 8, Grade 10 to produce a work of this scale. After completion, the short film was temporarily taken offline by the school administration over concerns of potential adverse impacts. No awards were given out for the festival that year.
-          </p>
+            We submitted The Unescapable Eighth Day of the Week to the school Science and Culture Art Festival. Few expected Grade 10 Class 8 to create such an ambitious work. The school later temporarily took it offline over concerns about its influence, and no awards were issued for the festival that year.</p>
         </div>
       </section>
 
@@ -833,10 +893,23 @@
       <section class="flow-section right-stage quote-section" data-flow-section>
         <div class="section-content quote-combined-wrapper" data-fade-zone>
           <div class="quote-text-group">
-            <blockquote class="songti-quote" data-i18n="quoteText">
-              “Suffering is not terrible; escape is what terrifies us most.”
+            <blockquote class="songti-quote" data-i18n-html="quoteText">
+              “Suffering is not terrible;<br>escape is what terrifies us most.”
             </blockquote>
             <cite class="songti-citation" data-i18n="quoteCite">— Crime and Punishment</cite>
+            <div class="quote-audio-row">
+              <button id="quote-audio-btn" class="circle-audio-btn" type="button" aria-label="Play Voiceover">
+                <svg class="icon-play" viewBox="0 0 12 14" aria-hidden="true">
+                  <path d="M1 1.2L11 7L1 12.8V1.2Z" />
+                </svg>
+                <svg class="icon-pause" viewBox="0 0 12 14" aria-hidden="true">
+                  <rect x="1.5" y="1.5" width="3" height="11" rx="0.6" />
+                  <rect x="7.5" y="1.5" width="3" height="11" rx="0.6" />
+                </svg>
+              </button>
+              <span class="voiceover-label" data-i18n="voiceoverLabel">VC GuXing</span>
+              <audio id="quote-audio" src="./audio.mp3" preload="metadata"></audio>
+            </div>
           </div>
           <div class="quote-desk-figure">
             <img src="./desk.png" alt="Crime and Punishment on school desk" onerror="this.style.display='none'">
@@ -859,9 +932,9 @@
           scrollPrompt: 'Scroll down to continue',
           originDates: 'Dates: March 2 – March 9, 2025',
           originLocation: 'Location: Main Teaching Building, Class 8, Grade 10 (Class of 2026)',
-          originP1: 'A small spark of inspiration emerged during class — a time loop trap. The concept fascinated me immediately. I had long wanted to gather classmates to film a short film, and video production was an entirely new field for me. After discussing the idea with several peers, everyone agreed the story was worth making. The team was deeply united: creative members shared ideas, willing actors sacrificed their weekends for shooting, and a physics teacher also made a guest appearance. Together, we completed the final film.',
-          originP2: 'The Unescapable Eighth Day of the Week was originally submitted for the school’s Science and Culture Art Festival. Few expected Class 8, Grade 10 to produce a work of this scale. After completion, the short film was temporarily taken offline by the school administration over concerns of potential adverse impacts. No awards were given out for the festival that year.',
-          headingCast: 'Cast & Crew',
+         originP1: 'A spark of inspiration struck in class: a time loop trap. I was immediately fascinated. I’d long wanted to shoot a short film with classmates, and filmmaking was brand new to me. My peers loved the concept. Our team collaborated closely: creators brainstormed, actors gave up weekends for filming, and a physics teacher guest-starred. We finished the film together.',
+originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Science and Culture Art Festival. Few expected Grade 10 Class 8 to create such an ambitious work. The school later temporarily took it offline over concerns about its influence, and no awards were issued for the festival that year.',
+ headingCast: 'Cast & Crew',
           labelScreenplay: 'Screenplay',
           valScreenplay: 'Cai Yuhao, Ding Haoxuan',
           labelEditor: 'Editor',
@@ -881,9 +954,10 @@
           labelProducer: 'Producer',
           valProducer: 'Class 8, Grade 10 (Class of 2026)',
           labelProdDate: 'Production Date',
-          valProdDate: 'Mar. 9, 2025',
-          quoteText: '“Suffering is not terrible; escape is what terrifies us most.”',
-          quoteCite: '— Crime and Punishment'
+          valProdDate: 'Mar. 30, 2025',
+          quoteText: '“Suffering is not terrible;<br>escape is what terrifies us most.”',
+          quoteCite: '— Crime and Punishment',
+          voiceoverLabel: 'VC GuXing'
         },
         zh: {
           skipIntro: '跳过片头',
@@ -915,9 +989,10 @@
           labelProducer: '出品',
           valProducer: '高二8班（2026届）',
           labelProdDate: '出品日期',
-          valProdDate: '2025年3月9日',
-          quoteText: '痛苦并不可怕，逃避才是最可怕的。',
-          quoteCite: '——《罪与罚》'
+          valProdDate: '三月 30, 2025',
+          quoteText: '痛苦并不可怕，<br>逃避才是最可怕的。',
+          quoteCite: '——《罪与罚》',
+          voiceoverLabel: '顾醒 配音'
         }
       };
 
@@ -963,6 +1038,34 @@
       }
 
       applyLanguage(currentLang);
+
+      const quoteAudioBtn = document.getElementById('quote-audio-btn');
+      const quoteAudio = document.getElementById('quote-audio');
+
+      if (quoteAudioBtn && quoteAudio) {
+        quoteAudioBtn.addEventListener('click', () => {
+          if (quoteAudio.paused) {
+            quoteAudio.play().catch(() => {});
+          } else {
+            quoteAudio.pause();
+          }
+        });
+
+        quoteAudio.addEventListener('play', () => {
+          quoteAudioBtn.classList.add('playing');
+          quoteAudioBtn.setAttribute('aria-label', 'Pause Voiceover');
+        });
+
+        quoteAudio.addEventListener('pause', () => {
+          quoteAudioBtn.classList.remove('playing');
+          quoteAudioBtn.setAttribute('aria-label', 'Play Voiceover');
+        });
+
+        quoteAudio.addEventListener('ended', () => {
+          quoteAudioBtn.classList.remove('playing');
+          quoteAudioBtn.setAttribute('aria-label', 'Play Voiceover');
+        });
+      }
 
       const body = document.body;
       const videoLayer = document.getElementById('video-layer');
