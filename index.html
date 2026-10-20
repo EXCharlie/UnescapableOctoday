@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unescapable Octoday — Micro-Video Production</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --fg: #ffffff;
+      --fg-muted: #b5b7bc;
+      --fg-subtle: #686a70;
+      --font-sys: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sys);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    body.locked {
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    #video-layer {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--bg);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s var(--ease-out);
+    }
+
+    #video-layer.hidden {
+      display: none !important;
+      pointer-events: none;
+    }
+
+    #intro-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    #video-skip {
+      position: fixed;
+      bottom: 2.5rem;
+      right: 2.5rem;
+      z-index: 10000;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--fg-muted);
+      font-family: var(--font-sys);
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.55rem 1.1rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.5s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    #video-layer:hover #video-skip,
+    #video-skip.visible {
+      opacity: 0.75;
+    }
+
+    #video-skip:hover {
+      opacity: 1 !important;
+      color: var(--fg);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    #portfolio {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    body.revealed #portfolio {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #scroll-track {
+      width: 100%;
+      height: 700vh;
+    }
+
+    #fixed-viewport {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* All stages share identical vertical top-alignment and left alignment */
+    .right-stage {
+      --stage-offset: clamp(2rem, 4.5vw, 4.5rem);
+      position: fixed;
+      top: clamp(8rem, 20vh, 18rem);
+      left: 50vw;
+      width: 50vw;
+      height: calc(100vh - clamp(8rem, 20vh, 16rem));
+      padding-left: var(--stage-offset);
+      padding-right: clamp(1.5rem, 5vw, 5rem);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    .right-stage.active-stage {
+      pointer-events: auto;
+    }
+
+    #hero-section {
+      justify-content: flex-start;
+    }
+
+    .seq-item {
+      width: 100%;
+      text-align: left;
+      opacity: 0;
+      transform: translateX(36px);
+      transition: opacity 0.95s var(--ease-out), transform 0.95s var(--ease-out);
+    }
+
+    /* Heading appears instantly without transition when video finishes */
+    .seq-item.instant-reveal {
+      transition: none !important;
+      opacity: 1 !important;
+      transform: translateX(0) !important;
+    }
+
+    .seq-item.in-view {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fg-subtle);
+      margin-bottom: 0.9rem;
+    }
+
+    .hero-heading {
+      font-size: clamp(2.6rem, 5.2vw, 5.4rem);
+      line-height: 1.04;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.75rem;
+      color: var(--fg);
+      text-align: left;
+    }
+
+    .hero-heading .thin {
+      font-weight: 100;
+      display: inline-block;
+      margin-right: 0.22em;
+    }
+
+    .hero-heading .bold {
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    .synopsis-text {
+      font-size: clamp(1.05rem, 1.25vw, 1.22rem);
+      line-height: 1.78;
+      color: var(--fg-muted);
+      max-width: 38rem;
+      font-weight: 300;
+      margin-bottom: 2.4rem;
+      text-align: left;
+    }
+
+    .capsule-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.82rem 1.95rem;
+      border-radius: 9999px;
+      background-color: var(--fg);
+      color: var(--bg);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      border: 1px solid var(--fg);
+      transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), background-color 0.3s ease, color 0.3s ease;
+      margin-bottom: 3.6rem;
+    }
+
+    .capsule-play svg {
+      width: 11px;
+      height: 11px;
+      fill: currentColor;
+      transition: transform 0.35s var(--ease-out);
+    }
+
+    .capsule-play:hover {
+      background-color: transparent;
+      color: var(--fg);
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(255, 255, 255, 0.28);
+    }
+
+    .capsule-play:hover svg {
+      transform: translateX(2px);
+    }
+
+    .scroll-prompt {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--fg-subtle);
+    }
+
+    .scroll-indicator {
+      width: 28px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-indicator::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--fg);
+      animation: flowLine 2.4s infinite var(--ease-out);
+    }
+
+    @keyframes flowLine {
+      0% { left: -100%; }
+      50% { left: 0%; }
+      100% { left: 100%; }
+    }
+
+    .scroll-prompt-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2.25rem;
+    }
+
+    .lang-toggle {
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      color: var(--fg-subtle);
+      cursor: pointer;
+      user-select: none;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-family: inherit;
+    }
+
+    .flow-section {
+      justify-content: flex-start;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .section-heading {
+      font-weight: 100;
+      font-variation-settings: "wght" 100;
+      font-synthesis: none;
+      font-size: clamp(2rem, 3.6vw, 3.35rem);
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+      color: var(--fg);
+      margin-bottom: 1.6rem;
+      text-align: left;
+      will-change: font-weight, font-variation-settings, text-shadow;
+    }
+
+    .section-content {
+      width: 100%;
+      max-width: 38rem;
+      text-align: left;
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    .credits-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
+      gap: 1.5rem 2.5rem;
+      justify-items: start;
+      text-align: left;
+    }
+
+    .credit-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: 0.3rem;
+    }
+
+    .credit-group.span-full {
+      grid-column: 1 / -1;
+    }
+
+    .role-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--fg-subtle);
+      font-weight: 500;
+    }
+
+    .role-names {
+      font-size: clamp(1.05rem, 1.2vw, 1.18rem);
+      line-height: 1.7;
+      color: var(--fg-muted);
+      font-weight: 300;
+    }
+
+    .story-paragraph {
+      font-size: clamp(1.08rem, 1.25vw, 1.22rem);
+      line-height: 1.85;
+      color: var(--fg-muted);
+      font-weight: 300;
+      margin-bottom: 1.2rem;
+      text-align: left;
+    }
+
+    .story-paragraph:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Behind-the-scenes / Origin Meta List */
+    .origin-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.65rem;
+      margin-bottom: 1.55rem;
+    }
+
+    .origin-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: clamp(0.95rem, 1.1vw, 1.08rem);
+      color: var(--fg);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 1.45;
+    }
+
+    .origin-meta-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      stroke: var(--fg-muted);
+      stroke-width: 1.6;
+      fill: none;
+    }
+
+    .origin-meta-label {
+      color: var(--fg-subtle);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      font-weight: 500;
+      margin-right: 0.25rem;
+    }
+
+    .meta-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: 1.85rem;
+    }
+
+    .meta-block .meta-value {
+      font-size: clamp(1.22rem, 1.45vw, 1.4rem);
+      font-weight: 300;
+      color: var(--fg);
+      letter-spacing: 0.02em;
+    }
+
+    .quote-section {
+      justify-content: flex-start;
+    }
+
+    .quote-combined-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    .quote-text-group {
+      max-width: 34rem;
+      z-index: 2;
+    }
+
+    .songti-quote {
+      font-family: "Songti SC", "STSong", "SimSun", "NSimSun", "Noto Serif CJK SC", "Source Han Serif SC", "Times New Roman", Georgia, serif;
+      font-size: clamp(1.45rem, 2.3vw, 2.25rem);
+      line-height: 1.65;
+      font-weight: 400;
+      color: var(--fg);
+      letter-spacing: 0.025em;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .songti-citation {
+      font-family: "Songti SC", "STSong", "SimSun", "NSimSun", "Noto Serif CJK SC", "Source Han Serif SC", "Times New Roman", Georgia, serif;
+      font-size: clamp(1rem, 1.3vw, 1.25rem);
+      color: var(--fg-muted);
+      letter-spacing: 0.08em;
+      font-style: italic;
+      text-align: left;
+      display: block;
+    }
+
+    .quote-desk-figure {
+      position: absolute;
+      right: clamp(1rem, 6vw, 5.5rem);
+      bottom: clamp(2.5rem, 8vh, 6.5rem);
+      width: clamp(200px, 23vw, 390px);
+      pointer-events: none;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quote-desk-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: brightness(0.68) contrast(1.06);
+      -webkit-mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.65) 74%, rgba(0,0,0,0) 100%);
+      mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.65) 74%, rgba(0,0,0,0) 100%);
+    }
+
+    #left-waterfall {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 45vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: auto;
+      background-color: var(--bg);
+      opacity: 0;
+      transform: translateX(-24px);
+      transition: opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out);
+    }
+
+    #left-waterfall.in-view {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .waterfall-track {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      will-change: transform;
+      animation: waterfallScroll 42s linear infinite;
+    }
+
+    #left-waterfall:hover .waterfall-track {
+      animation-play-state: paused;
+    }
+
+    .waterfall-item {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #050505;
+      flex-shrink: 0;
+    }
+
+    .waterfall-item img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(14%) contrast(1.04) brightness(0.88);
+      transition: transform 0.85s var(--ease-out), filter 0.6s ease;
+    }
+
+    .waterfall-item:hover img {
+      transform: scale(1.03);
+      filter: grayscale(0%) contrast(1.06) brightness(1);
+    }
+
+    @keyframes waterfallScroll {
+      0% {
+        transform: translate3d(0, 0, 0);
+      }
+      100% {
+        transform: translate3d(0, -50%, 0);
+      }
+    }
+
+    @keyframes waterfallScrollMobile {
+      0% {
+        transform: translate3d(0, 0, 0);
+      }
+      100% {
+        transform: translate3d(-50%, 0, 0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      #left-waterfall {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 56.25vw; /* 16:9 height for 100vw width */
+        z-index: 10;
+        transform: translateY(24px);
+      }
+
+      #left-waterfall.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .waterfall-track {
+        flex-direction: row;
+        width: max-content;
+        height: 100%;
+        animation: waterfallScrollMobile 36s linear infinite;
+      }
+
+      .waterfall-item {
+        width: 100vw;
+        height: 56.25vw;
+        aspect-ratio: 16 / 9;
+      }
+
+      .right-stage {
+        top: clamp(2.2rem, 6vh, 4rem);
+        left: 0;
+        width: 100vw;
+        height: calc(100vh - 56.25vw - clamp(2.2rem, 6vh, 4rem));
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+
+      .hero-heading {
+        font-size: clamp(2.1rem, 8.5vw, 3.2rem);
+        margin-bottom: 1rem;
+      }
+
+      .synopsis-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.35rem;
+      }
+
+      .capsule-play {
+        margin-bottom: 1.6rem;
+        padding: 0.65rem 1.5rem;
+      }
+
+      .credits-layout {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 0.9rem 1.25rem;
+      }
+
+      .story-paragraph {
+        font-size: 0.92rem;
+        line-height: 1.58;
+        margin-bottom: 0.85rem;
+      }
+
+      .origin-meta {
+        gap: 0.4rem;
+        margin-bottom: 0.95rem;
+      }
+
+      .origin-meta-item {
+        font-size: 0.85rem;
+      }
+
+      .quote-desk-figure {
+        right: 0.5rem;
+        bottom: 1rem;
+        width: clamp(135px, 40vw, 200px);
+      }
+    }
+  </style>
+</head>
+<body class="locked">
+
+  <div id="video-layer" aria-label="Intro Video Presentation">
+    <video id="intro-video" src="./demo.mp4" autoplay muted playsinline preload="auto"></video>
+    <button id="video-skip" type="button" aria-label="Skip">Skip Intro</button>
+  </div>
+
+  <main id="portfolio">
+    <div id="scroll-track" aria-hidden="true"></div>
+
+    <aside id="left-waterfall" aria-label="Production Stills Waterfall">
+      <div class="waterfall-track">
+        <!-- Primary Set: s1.jpeg to s6.jpeg -->
+        <div class="waterfall-item">
+          <img src="./s1.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0b0b0b/383838?text=s1.jpeg'">
+        </div>
+        <div class="waterfall-item">
+          <img src="./s2.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0e0e0e/383838?text=s2.jpeg'">
+        </div>
+        <div class="waterfall-item">
+          <img src="./s3.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/090909/383838?text=s3.jpeg'">
+        </div>
+        <div class="waterfall-item">
+          <img src="./s4.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0c0c0c/383838?text=s4.jpeg'">
+        </div>
+        <div class="waterfall-item">
+          <img src="./s5.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/080808/383838?text=s5.jpeg'">
+        </div>
+        <div class="waterfall-item">
+          <img src="./s6.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0d0d0d/383838?text=s6.jpeg'">
+        </div>
+        <!-- Duplicated Set for Seamless Infinite Vertical Scrolling -->
+        <div class="waterfall-item" aria-hidden="true">
+          <img src="./s1.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0b0b0b/383838?text=s1.jpeg'">
+        </div>
+        <div class="waterfall-item" aria-hidden="true">
+          <img src="./s2.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0e0e0e/383838?text=s2.jpeg'">
+        </div>
+        <div class="waterfall-item" aria-hidden="true">
+          <img src="./s3.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/090909/383838?text=s3.jpeg'">
+        </div>
+        <div class="waterfall-item" aria-hidden="true">
+          <img src="./s4.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0c0c0c/383838?text=s4.jpeg'">
+        </div>
+        <div class="waterfall-item" aria-hidden="true">
+          <img src="./s5.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/080808/383838?text=s5.jpeg'">
+        </div>
+        <div class="waterfall-item" aria-hidden="true">
+          <img src="./s6.jpeg" alt="" onerror="this.src='https://placehold.co/1600x900/0d0d0d/383838?text=s6.jpeg'">
+        </div>
+      </div>
+    </aside>
+
+    <div id="fixed-viewport">
+      <!-- 1. Hero / Header Component -->
+      <section id="hero-section" class="right-stage active-stage">
+        <div class="seq-item instant-reveal" data-step="1">
+          <h1 class="hero-heading">
+            <span class="thin">Unescapable</span><br><span class="bold">Octoday</span>
+          </h1>
+        </div>
+
+        <div class="seq-item" data-step="1-sub">
+          <p class="eyebrow" data-i18n="eyebrow">Short Video for Jiyan Middle School Science and Culture Art Festival</p>
+        </div>
+
+        <p class="synopsis-text seq-item" data-step="2" data-i18n="synopsis">
+          As the Saturday school bell rings, mobile-game-obsessed teen Gu Xing rushes home for a duo queue. Why is he trapped in a teaching building in an endless time loop? How can he break the endless ordeal? And how will this temporal cage change him?
+        </p>
+
+        <div class="seq-item" data-step="3">
+          <a class="capsule-play" href="https://weixin.qq.com/sph/ARITl9lb8B" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 12 14" aria-hidden="true">
+              <path d="M1 1.2L11 7L1 12.8V1.2Z" />
+            </svg>
+            <span data-i18n="playBtn">Play</span>
+          </a>
+        </div>
+
+        <div class="scroll-prompt-row seq-item" data-step="4">
+          <div class="scroll-prompt">
+            <span class="scroll-indicator" aria-hidden="true"></span>
+            <span data-i18n="scrollPrompt">Scroll down to continue</span>
+          </div>
+          <span id="lang-toggle" class="lang-toggle" role="button" tabindex="0">EN / 中文</span>
+        </div>
+      </section>
+
+      <!-- 2. Behind the Scenes / Origin Component -->
+      <section class="flow-section right-stage" data-flow-section>
+        <div class="section-content" data-fade-zone>
+          <div class="origin-meta">
+            <div class="origin-meta-item">
+              <svg viewBox="0 0 24 24" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span data-i18n="originDates">Dates: March 2 – March 9, 2025</span>
+            </div>
+            <div class="origin-meta-item">
+              <svg viewBox="0 0 24 24" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span data-i18n="originLocation">Location: Main Teaching Building, Class 8, Grade 10 (Class of 2026)</span>
+            </div>
+          </div>
+          <p class="story-paragraph" data-i18n="originP1">
+            A small spark of inspiration emerged during class — a time loop trap. The concept fascinated me immediately. I had long wanted to gather classmates to film a short film, and video production was an entirely new field for me. After discussing the idea with several peers, everyone agreed the story was worth making. The team was deeply united: creative members shared ideas, willing actors sacrificed their weekends for shooting, and a physics teacher also made a guest appearance. Together, we completed the final film.
+          </p>
+          <p class="story-paragraph" data-i18n="originP2">
+            The Unescapable Eighth Day of the Week was originally submitted for the school’s Science and Culture Art Festival. Few expected Class 8, Grade 10 to produce a work of this scale. After completion, the short film was temporarily taken offline by the school administration over concerns of potential adverse impacts. No awards were given out for the festival that year.
+          </p>
+        </div>
+      </section>
+
+      <!-- 3. Cast & Crew Component -->
+      <section class="flow-section right-stage" data-flow-section>
+        <h2 class="section-heading" data-i18n="headingCast">Cast &amp; Crew</h2>
+        <div class="section-content credits-layout" data-fade-zone>
+          <div class="credit-group">
+            <span class="role-label" data-i18n="labelScreenplay">Screenplay</span>
+            <span class="role-names" data-i18n="valScreenplay">Cai Yuhao, Ding Haoxuan</span>
+          </div>
+          <div class="credit-group">
+            <span class="role-label" data-i18n="labelEditor">Editor</span>
+            <span class="role-names" data-i18n="valEditor">Cai Yuhao</span>
+          </div>
+          <div class="credit-group">
+            <span class="role-label" data-i18n="labelNarrator">Narrator</span>
+            <span class="role-names" data-i18n="valNarrator">Cai Shiyao</span>
+          </div>
+          <div class="credit-group">
+            <span class="role-label" data-i18n="labelAdvisor">Advisor</span>
+            <span class="role-names" data-i18n="valAdvisor">Cai Anlin</span>
+          </div>
+          <div class="credit-group">
+            <span class="role-label" data-i18n="labelCast">Cast</span>
+            <span class="role-names" data-i18n-html="valCast">
+              Lin Jingtao · Cai Yuankai<br>
+              Lian Yuze · Chen Junjie<br>
+              Zeng Zhimin · Cao Zhengkai
+            </span>
+          </div>
+          <div class="credit-group">
+            <span class="role-label" data-i18n="labelExtras">Extras</span>
+            <span class="role-names" data-i18n-html="valExtras">
+              Yang Hongxin · Zhang Yi<br>
+              Yan Zihong · Cai Enbo<br>
+              Chen Zihao · Chen Junxiang<br>
+              Ding Haoxuan
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Story Component -->
+      <section class="flow-section right-stage" data-flow-section>
+        <h2 class="section-heading" data-i18n="headingStory">Story</h2>
+        <div class="section-content" data-fade-zone>
+          <p class="story-paragraph" data-i18n="storyP1">
+            When the Saturday school dismissal bell rings, mobile-game-addicted teen Gu Xingwei hurries home with his classmate for a duo ranked game, only to be trapped in an endlessly looping teaching building.
+          </p>
+          <p class="story-paragraph" data-i18n="storyP2">
+            He suffers destroyed homework, fruitless attempts to seek help, and witnesses bullying. As he empathizes with victim Z, memory flashbacks expose that he was once the bully. This temporal cage gives him an opportunity to confront himself and achieve redemption.
+          </p>
+        </div>
+      </section>
+
+      <!-- 5. Producer & Production Date Component -->
+      <section class="flow-section right-stage" data-flow-section>
+        <h2 class="section-heading" data-i18n="headingProduction">Production</h2>
+        <div class="section-content meta-grid" data-fade-zone>
+          <div class="credit-group meta-block">
+            <span class="role-label" data-i18n="labelProducer">Producer</span>
+            <span class="meta-value" data-i18n="valProducer">Class 8, Grade 10 (Class of 2026)</span>
+          </div>
+          <div class="credit-group meta-block">
+            <span class="role-label" data-i18n="labelProdDate">Production Date</span>
+            <span class="meta-value" data-i18n="valProdDate">Mar. 30, 2025</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Quote & Desk Combined Component -->
+      <section class="flow-section right-stage quote-section" data-flow-section>
+        <div class="section-content quote-combined-wrapper" data-fade-zone>
+          <div class="quote-text-group">
+            <blockquote class="songti-quote" data-i18n="quoteText">
+              “Suffering is not terrible; escape is what terrifies us most.”
+            </blockquote>
+            <cite class="songti-citation" data-i18n="quoteCite">— Crime and Punishment</cite>
+          </div>
+          <div class="quote-desk-figure">
+            <img src="./desk.png" alt="Crime and Punishment on school desk" onerror="this.style.display='none'">
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const i18nData = {
+        en: {
+          skipIntro: 'Skip Intro',
+          eyebrow: 'Short Video for Jiyan Middle School Science and Culture Art Festival',
+          synopsis: 'As the Saturday school bell rings, mobile-game-obsessed teen Gu Xing rushes home for a duo queue. Why is he trapped in a teaching building in an endless time loop? How can he break the endless ordeal? And how will this temporal cage change him?',
+          playBtn: 'Play',
+          scrollPrompt: 'Scroll down to continue',
+          originDates: 'Dates: March 2 – March 9, 2025',
+          originLocation: 'Location: Main Teaching Building, Class 8, Grade 10 (Class of 2026)',
+          originP1: 'A small spark of inspiration emerged during class — a time loop trap. The concept fascinated me immediately. I had long wanted to gather classmates to film a short film, and video production was an entirely new field for me. After discussing the idea with several peers, everyone agreed the story was worth making. The team was deeply united: creative members shared ideas, willing actors sacrificed their weekends for shooting, and a physics teacher also made a guest appearance. Together, we completed the final film.',
+          originP2: 'The Unescapable Eighth Day of the Week was originally submitted for the school’s Science and Culture Art Festival. Few expected Class 8, Grade 10 to produce a work of this scale. After completion, the short film was temporarily taken offline by the school administration over concerns of potential adverse impacts. No awards were given out for the festival that year.',
+          headingCast: 'Cast & Crew',
+          labelScreenplay: 'Screenplay',
+          valScreenplay: 'Cai Yuhao, Ding Haoxuan',
+          labelEditor: 'Editor',
+          valEditor: 'Cai Yuhao',
+          labelNarrator: 'Narrator',
+          valNarrator: 'Cai Shiyao',
+          labelAdvisor: 'Advisor',
+          valAdvisor: 'Cai Anlin',
+          labelCast: 'Cast',
+          valCast: 'Lin Jingtao · Cai Yuankai<br>Lian Yuze · Chen Junjie<br>Zeng Zhimin · Cao Zhengkai',
+          labelExtras: 'Extras',
+          valExtras: 'Yang Hongxin · Zhang Yi<br>Yan Zihong · Cai Enbo<br>Chen Zihao · Chen Junxiang<br>Ding Haoxuan',
+          headingStory: 'Story',
+          storyP1: 'When the Saturday school dismissal bell rings, mobile-game-addicted teen Gu Xingwei hurries home with his classmate for a duo ranked game, only to be trapped in an endlessly looping teaching building.',
+          storyP2: 'He suffers destroyed homework, fruitless attempts to seek help, and witnesses bullying. As he empathizes with victim Z, memory flashbacks expose that he was once the bully. This temporal cage gives him an opportunity to confront himself and achieve redemption.',
+          headingProduction: 'Production',
+          labelProducer: 'Producer',
+          valProducer: 'Class 8, Grade 10 (Class of 2026)',
+          labelProdDate: 'Production Date',
+          valProdDate: 'Mar. 9, 2025',
+          quoteText: '“Suffering is not terrible; escape is what terrifies us most.”',
+          quoteCite: '— Crime and Punishment'
+        },
+        zh: {
+          skipIntro: '跳过片头',
+          eyebrow: '《无法逃离的星期八》季延中学科学文化艺术节微视频制作',
+          synopsis: '周六放学铃声响起，沉迷手游的少年顾醒急于回家双排，却为何被困无限循环的教学楼？他究竟要怎样才能打破这无尽的困境？这场时空牢笼，又会如何改变他？',
+          playBtn: '播放',
+          scrollPrompt: '向下滚动继续',
+          originDates: '时间：2025.3.2-3.9',
+          originLocation: '地点：主教学楼 高二8班（2026届）',
+          originP1: '课堂上，一个小小的灵感突然冒了出来 —— 时间囚笼。我当时就觉得这个设定很有意思，一直想召集同学们一起拍一部短片，而影视创作也是我从未接触过的全新领域。和几位同学讨论过后，大家都觉得这个故事值得尝试。整个团队格外齐心：有创意的同学贡献想法，愿意参演的人牺牲周末时间参与拍摄，物理老师也友情客串，众人合力，才有了最终的成片。',
+          originP2: '《无法逃离的星期八》原本是学校科学文化艺术节的参赛作品。似乎没人料到高二 8 班能完成这样体量的短片。作品完成后，被校方以影响不好曾被临时下架。当年本届科艺节最终也没有开展评奖。',
+          headingCast: '演职人员',
+          labelScreenplay: '编剧',
+          valScreenplay: '蔡誉豪 丁浩轩',
+          labelEditor: '剪辑',
+          valEditor: '蔡誉豪',
+          labelNarrator: '旁白',
+          valNarrator: '蔡诗瑶',
+          labelAdvisor: '指导',
+          valAdvisor: '蔡安霖',
+          labelCast: '主演',
+          valCast: '顾醒：林敬焘 · 蔡源凯<br>连雨泽 · 陈俊杰<br>曾智敏 · 曹郑凯',
+          labelExtras: '群演',
+          valExtras: '杨鸿鑫 · 张裔<br>颜子宏 · 蔡恩博<br>陈子濠 · 陈俊祥<br>丁浩轩',
+          headingStory: '故事简介',
+          storyP1: '周六放学的铃声响起，沉迷手游的少年顾醒为和同学双排冲刺回家，却发现自己被困在无限循环的教学楼中。',
+          storyP2: '他经历了作业被毁、求助无门、目睹霸凌等困境。当最终与被霸凌者Z产生共情时，顾醒在记忆闪回中发现自己也曾是施暴者。这场时空牢笼成为他直面内心、完成救赎的契机。',
+          headingProduction: '出品信息',
+          labelProducer: '出品',
+          valProducer: '高二8班（2026届）',
+          labelProdDate: '出品日期',
+          valProdDate: '2025年3月9日',
+          quoteText: '痛苦并不可怕，逃避才是最可怕的。',
+          quoteCite: '——《罪与罚》'
+        }
+      };
+
+      const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+      let currentLang = browserLang.startsWith('zh') ? 'zh' : 'en';
+
+      function applyLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+        const dict = i18nData[lang];
+
+        const skipEl = document.getElementById('video-skip');
+        if (skipEl && dict.skipIntro) {
+          skipEl.textContent = dict.skipIntro;
+        }
+
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+          const key = el.getAttribute('data-i18n');
+          if (dict[key] !== undefined) {
+            el.textContent = dict[key];
+          }
+        });
+
+        document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+          const key = el.getAttribute('data-i18n-html');
+          if (dict[key] !== undefined) {
+            el.innerHTML = dict[key];
+          }
+        });
+      }
+
+      const langToggle = document.getElementById('lang-toggle');
+      if (langToggle) {
+        langToggle.addEventListener('click', () => {
+          applyLanguage(currentLang === 'en' ? 'zh' : 'en');
+        });
+        langToggle.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            applyLanguage(currentLang === 'en' ? 'zh' : 'en');
+          }
+        });
+      }
+
+      applyLanguage(currentLang);
+
+      const body = document.body;
+      const videoLayer = document.getElementById('video-layer');
+      const introVideo = document.getElementById('intro-video');
+      const skipBtn = document.getElementById('video-skip');
+      const scrollTrack = document.getElementById('scroll-track');
+      const heroSection = document.getElementById('hero-section');
+      const leftWaterfall = document.getElementById('left-waterfall');
+      const seqItems = document.querySelectorAll('.seq-item');
+      const flowSections = document.querySelectorAll('[data-flow-section]');
+
+      let portfolioInitialized = false;
+
+      /**
+       * Immediately concludes video, reveals heading instantly,
+       * and delays the waterfall images and the rest of the header items by 1 second (1000ms).
+       */
+      function concludeVideoAndReveal() {
+        if (portfolioInitialized) return;
+        portfolioInitialized = true;
+
+        try {
+          introVideo.pause();
+          introVideo.removeAttribute('src');
+          introVideo.load();
+        } catch (err) {}
+
+        videoLayer.classList.add('hidden');
+        body.classList.remove('locked');
+        body.classList.add('revealed');
+        window.scrollTo(0, 0);
+
+        // Reveal the waterfall images after the 1-second delay
+        setTimeout(() => {
+          if (leftWaterfall) {
+            leftWaterfall.classList.add('in-view');
+          }
+        }, 1000);
+
+        // Remaining header items delayed by 1 second, then animate in sequentially
+        seqItems.forEach((item, index) => {
+          if (index === 0) return; // Heading already revealed instantly
+          setTimeout(() => {
+            item.classList.add('in-view');
+          }, 1000 + (index - 1) * 260);
+        });
+
+        startSmoothKinematicsLoop();
+      }
+
+      function initVideoPlayback() {
+        const showSkipTimer = setTimeout(() => {
+          skipBtn.classList.add('visible');
+        }, 1200);
+
+        introVideo.addEventListener('ended', () => {
+          clearTimeout(showSkipTimer);
+          concludeVideoAndReveal();
+        }, { once: true });
+
+        introVideo.addEventListener('error', () => {
+          clearTimeout(showSkipTimer);
+          concludeVideoAndReveal();
+        }, { once: true });
+
+        skipBtn.addEventListener('click', () => {
+          clearTimeout(showSkipTimer);
+          concludeVideoAndReveal();
+        });
+
+        const playPromise = introVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            introVideo.muted = true;
+            introVideo.play().catch(() => {
+              concludeVideoAndReveal();
+            });
+          });
+        }
+      }
+
+      /**
+       * Computes opacity based strictly on normalized distance from screen center:
+       * - Opacity = 1 (100% visible) within the central 65% viewport range (distance <= 0.325)
+       * - Opacity = 0 (fully transparent) outside the central 75% viewport range (distance >= 0.375)
+       */
+      function computeCenteredBandOpacity(normalizedDistance) {
+        const innerHalfBand = 0.65 / 2; // 0.325
+        const outerHalfBand = 0.75 / 2; // 0.375
+
+        if (normalizedDistance <= innerHalfBand) {
+          return 1;
+        }
+        if (normalizedDistance >= outerHalfBand) {
+          return 0;
+        }
+        const t = (normalizedDistance - innerHalfBand) / (outerHalfBand - innerHalfBand);
+        return 1 - t * t * (3 - 2 * t);
+      }
+
+      let targetScrollY = 0;
+      let smoothScrollY = 0;
+      let rafId = null;
+      const DAMPING = 0.085;
+
+      const totalPanels = 1 + flowSections.length;
+
+      function updateScrollTrackHeight() {
+        // Ensure the maximum scroll offset (scrollHeight - 100vh) reaches at least (totalPanels - 1) * 110vh + buffer
+        scrollTrack.style.height = `${((totalPanels - 1) * 110) + 125}vh`;
+      }
+
+      const sectionStates = Array.from(flowSections).map((section, idx) => ({
+        index: idx + 1,
+        section,
+        heading: section.querySelector('.section-heading'),
+        fadeTarget: section.querySelector('[data-fade-zone]'),
+        shiftX: window.innerWidth * 0.6,
+        sectionOpacity: 0,
+        weight: 100,
+        glow: 0,
+        contentOpacity: 0
+      }));
+
+      function lerp(current, target, factor) {
+        return current + (target - current) * factor;
+      }
+
+      function renderKinematicsFrame() {
+        if (!portfolioInitialized) return;
+
+        targetScrollY = window.scrollY || window.pageYOffset;
+        smoothScrollY = lerp(smoothScrollY, targetScrollY, DAMPING);
+
+        const vh = window.innerHeight || 1;
+        const vw = window.innerWidth || 1;
+        const stepScroll = vh * 1.1;
+        const currentProgress = smoothScrollY / stepScroll;
+        const maxTravelX = Math.min(vw * 0.55, 680);
+
+        // 1. Hero / Header Component
+        const heroRaw = Math.min(1, Math.max(0, currentProgress));
+        const heroEased = heroRaw * heroRaw * (3 - 2 * heroRaw);
+        const heroShiftX = -heroEased * maxTravelX;
+        const heroOpacity = Math.max(0, 1 - heroEased * 1.35);
+
+        heroSection.style.transform = `translate3d(${heroShiftX.toFixed(2)}px, 0, 0)`;
+        heroSection.style.opacity = heroOpacity.toFixed(3);
+        heroSection.classList.toggle('active-stage', heroOpacity > 0.1);
+
+        // 2. Flow Sections
+        sectionStates.forEach((state) => {
+          const offset = state.index - currentProgress;
+          const absDist = Math.abs(offset);
+
+          const clampedOffset = Math.max(-1.2, Math.min(1.2, offset));
+          const sign = clampedOffset >= 0 ? 1 : -1;
+          const normMag = Math.min(1, Math.abs(clampedOffset));
+          const easedMag = normMag * normMag * (3 - 2 * normMag);
+
+          const targetShiftX = sign * easedMag * maxTravelX;
+          const targetSectionOpacity = absDist >= 0.95 ? 0 : Math.cos((absDist / 0.95) * (Math.PI * 0.5));
+
+          state.shiftX = lerp(state.shiftX, targetShiftX, DAMPING * 1.2);
+          if (Math.abs(state.shiftX) < 0.05) state.shiftX = 0;
+          state.sectionOpacity = lerp(state.sectionOpacity, targetSectionOpacity, DAMPING * 1.2);
+
+          state.section.style.transform = `translate3d(${state.shiftX.toFixed(2)}px, 0, 0)`;
+          state.section.style.opacity = state.sectionOpacity.toFixed(3);
+          state.section.classList.toggle('active-stage', absDist < 0.45);
+
+          // Dynamic weight and glow centered on screen
+          if (state.heading) {
+            const normHeadingDist = Math.min(1, absDist / 0.75);
+            const targetProximity = 0.5 * (1 + Math.cos(Math.PI * normHeadingDist));
+
+            const targetWeight = 100 + targetProximity * 700;
+            state.weight = lerp(state.weight, targetWeight, DAMPING * 1.15);
+            state.glow = lerp(state.glow, targetProximity, DAMPING * 1.15);
+
+            const weightFixed = state.weight.toFixed(1);
+            state.heading.style.fontWeight = weightFixed;
+            state.heading.style.fontVariationSettings = `"wght" ${weightFixed}`;
+
+            if (state.glow > 0.01) {
+              const g1 = (state.glow * 0.95).toFixed(3);
+              const g2 = (state.glow * 0.75).toFixed(3);
+              const g3 = (state.glow * 0.5).toFixed(3);
+              const g4 = (state.glow * 0.3).toFixed(3);
+              state.heading.style.textShadow = `0 0 10px rgba(255, 255, 255, ${g1}), 0 0 24px rgba(255, 255, 255, ${g2}), 0 0 48px rgba(255, 255, 255, ${g3}), 0 0 85px rgba(255, 255, 255, ${g4})`;
+            } else {
+              state.heading.style.textShadow = 'none';
+            }
+          }
+
+          // Centered 65%-75% Opacity Band Rule
+          if (state.fadeTarget) {
+            const targetContentOpacity = computeCenteredBandOpacity(absDist);
+            state.contentOpacity = lerp(state.contentOpacity, targetContentOpacity, DAMPING * 1.25);
+            state.fadeTarget.style.opacity = state.contentOpacity.toFixed(3);
+          }
+        });
+
+        rafId = requestAnimationFrame(renderKinematicsFrame);
+      }
+
+      function startSmoothKinematicsLoop() {
+        updateScrollTrackHeight();
+        window.addEventListener('resize', updateScrollTrackHeight);
+        targetScrollY = window.scrollY || window.pageYOffset;
+        smoothScrollY = targetScrollY;
+        if (!rafId) {
+          rafId = requestAnimationFrame(renderKinematicsFrame);
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', initVideoPlayback);
+    })();
+  </script>
+</body>
+</html>
