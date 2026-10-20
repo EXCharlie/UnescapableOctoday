@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unescapable Octoday — Micro-Video Production</title>
+  <title>Unescapable Saturday</title>
   <style>
     :root {
       --bg: #000000;
@@ -20,7 +21,8 @@
       padding: 0;
     }
 
-    html, body {
+    html,
+    body {
       width: 100%;
       background-color: var(--bg);
       color: var(--fg);
@@ -191,6 +193,7 @@
 
     .hero-heading .bold {
       font-weight: 700;
+      font-size: 0.8em;
       display: inline-block;
     }
 
@@ -269,9 +272,17 @@
     }
 
     @keyframes flowLine {
-      0% { left: -100%; }
-      50% { left: 0%; }
-      100% { left: 100%; }
+      0% {
+        left: -100%;
+      }
+
+      50% {
+        left: 0%;
+      }
+
+      100% {
+        left: 100%;
+      }
     }
 
     .scroll-prompt-row {
@@ -542,8 +553,8 @@
       height: auto;
       object-fit: contain;
       filter: brightness(0.68) contrast(1.06);
-      -webkit-mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.65) 74%, rgba(0,0,0,0) 100%);
-      mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.65) 74%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, rgba(0, 0, 0, 1) 48%, rgba(0, 0, 0, 0.65) 74%, rgba(0, 0, 0, 0) 100%);
+      mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, rgba(0, 0, 0, 1) 48%, rgba(0, 0, 0, 0.65) 74%, rgba(0, 0, 0, 0) 100%);
     }
 
     #left-waterfall {
@@ -608,6 +619,7 @@
       0% {
         transform: translate3d(0, 0, 0);
       }
+
       100% {
         transform: translate3d(0, -50%, 0);
       }
@@ -617,6 +629,7 @@
       0% {
         transform: translate3d(0, 0, 0);
       }
+
       100% {
         transform: translate3d(-50%, 0, 0);
       }
@@ -628,7 +641,8 @@
         bottom: 0;
         left: 0;
         width: 100vw;
-        height: 56.25vw; /* 16:9 height for 100vw width */
+        height: 56.25vw;
+        /* 16:9 height for 100vw width */
         z-index: 10;
         transform: translateY(24px);
       }
@@ -704,6 +718,7 @@
     }
   </style>
 </head>
+<script src="/effect.js"> </script>
 <body class="locked">
 
   <div id="video-layer" aria-label="Intro Video Presentation">
@@ -761,17 +776,20 @@
       <!-- 1. Hero / Header Component -->
       <section id="hero-section" class="right-stage active-stage">
         <div class="seq-item instant-reveal" data-step="1">
-          <h1 class="hero-heading">
-            <span class="thin">Unescapable</span><br><span class="bold">Octoday</span>
+          <h1 class="hero-heading glitch-container">
+            <span class="glitch bold">Unescapable</span><br><span class="glitch thin">Saturday</span>
           </h1>
         </div>
 
         <div class="seq-item" data-step="1-sub">
-          <p class="eyebrow" data-i18n="eyebrow">Short Video for Jiyan Middle School Science and Culture Art Festival</p>
+          <p class="eyebrow" data-i18n="eyebrow">Short Video for Jiyan Middle School Science and Culture Art Festival
+          </p>
         </div>
 
         <p class="synopsis-text seq-item" data-step="2" data-i18n="synopsis">
-          As the Saturday school bell rings, mobile-game-obsessed teen Gu Xing rushes home for a duo queue. Why is he trapped in a teaching building in an endless time loop? How can he break the endless ordeal? And how will this temporal cage change him?
+          As the Saturday school bell rings, mobile-game-obsessed teen Gu Xing rushes home for a duo queue. Why is he
+          trapped in a teaching building in an endless time loop? How can he break the endless ordeal? And how will this
+          temporal cage change him?
         </p>
 
         <div class="seq-item" data-step="3">
@@ -810,14 +828,20 @@
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
-              <span data-i18n="originLocation">Location: Main Teaching Building, Class 8, Grade 10 (Class of 2026)</span>
+              <span data-i18n="originLocation">Location: Main Teaching Building, Class 8, Grade 10 (Class of
+                2026)</span>
             </div>
           </div>
           <p class="story-paragraph" data-i18n="originP1">
-           A spark of inspiration struck in class: a time loop trap. I was immediately fascinated. I’d long wanted to shoot a short film with classmates, and filmmaking was brand new to me. My peers loved the concept. Our team collaborated closely: creators brainstormed, actors gave up weekends for filming, and a physics teacher guest-starred. We finished the film together.
+            A spark of inspiration struck in class: a time loop trap. I was immediately fascinated. I’d long wanted to
+            shoot a short film with classmates, and filmmaking was brand new to me. My peers loved the concept. Our team
+            collaborated closely: creators brainstormed, actors gave up weekends for filming, and a physics teacher
+            guest-starred. We finished the film together.
           </p>
           <p class="story-paragraph" data-i18n="originP2">
-            We submitted The Unescapable Eighth Day of the Week to the school Science and Culture Art Festival. Few expected Grade 10 Class 8 to create such an ambitious work. The school later temporarily took it offline over concerns about its influence, and no awards were issued for the festival that year.</p>
+            We submitted Unescapable Saturday to the school Science and Culture Art Festival. Few expected Grade 10 Class
+            8 to create such an ambitious work. The school later temporarily took it offline over concerns about its
+            influence, and no awards were issued for the festival that year.</p>
         </div>
       </section>
 
@@ -866,10 +890,13 @@
         <h2 class="section-heading" data-i18n="headingStory">Story</h2>
         <div class="section-content" data-fade-zone>
           <p class="story-paragraph" data-i18n="storyP1">
-            When the Saturday school dismissal bell rings, mobile-game-addicted teen Gu Xingwei hurries home with his classmate for a duo ranked game, only to be trapped in an endlessly looping teaching building.
+            When the Saturday school dismissal bell rings, mobile-game-addicted teen Gu Xing hurries home with his
+            classmate for a duo ranked game, only to be trapped in an endlessly looping teaching building.
           </p>
           <p class="story-paragraph" data-i18n="storyP2">
-            He suffers destroyed homework, fruitless attempts to seek help, and witnesses bullying. As he empathizes with victim Z, memory flashbacks expose that he was once the bully. This temporal cage gives him an opportunity to confront himself and achieve redemption.
+            He suffers destroyed homework, fruitless attempts to seek help, and witnesses bullying. As he empathizes
+            with victim Z, memory flashbacks expose that he was once the bully. This temporal cage gives him an
+            opportunity to confront himself and achieve redemption.
           </p>
         </div>
       </section>
@@ -932,9 +959,9 @@
           scrollPrompt: 'Scroll down to continue',
           originDates: 'Dates: March 2 – March 9, 2025',
           originLocation: 'Location: Main Teaching Building, Class 8, Grade 10 (Class of 2026)',
-         originP1: 'A spark of inspiration struck in class: a time loop trap. I was immediately fascinated. I’d long wanted to shoot a short film with classmates, and filmmaking was brand new to me. My peers loved the concept. Our team collaborated closely: creators brainstormed, actors gave up weekends for filming, and a physics teacher guest-starred. We finished the film together.',
-originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Science and Culture Art Festival. Few expected Grade 10 Class 8 to create such an ambitious work. The school later temporarily took it offline over concerns about its influence, and no awards were issued for the festival that year.',
- headingCast: 'Cast & Crew',
+          originP1: 'A spark of inspiration struck in class: a time loop trap. I was immediately fascinated. I’d long wanted to shoot a short film with classmates, and filmmaking was brand new to me. My peers loved the concept. Our team collaborated closely: creators brainstormed, actors gave up weekends for filming, and a physics teacher guest-starred. We finished the film together.',
+          originP2: 'We submitted Unescapable Saturday the school Science and Culture Art Festival. Few expected Grade 10 Class 8 to create such an ambitious work. The school later temporarily took it offline over concerns about its influence, and no awards were issued for the festival that year.',
+          headingCast: 'Cast & Crew',
           labelScreenplay: 'Screenplay',
           valScreenplay: 'Cai Yuhao, Ding Haoxuan',
           labelEditor: 'Editor',
@@ -948,7 +975,7 @@ originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Sci
           labelExtras: 'Extras',
           valExtras: 'Yang Hongxin · Zhang Yi<br>Yan Zihong · Cai Enbo<br>Chen Zihao · Chen Junxiang<br>Ding Haoxuan',
           headingStory: 'Story',
-          storyP1: 'When the Saturday school dismissal bell rings, mobile-game-addicted teen Gu Xingwei hurries home with his classmate for a duo ranked game, only to be trapped in an endlessly looping teaching building.',
+          storyP1: 'When the Saturday school dismissal bell rings, mobile-game-addicted teen Gu Xing hurries home with his classmate for a duo ranked game, only to be trapped in an endlessly looping teaching building.',
           storyP2: 'He suffers destroyed homework, fruitless attempts to seek help, and witnesses bullying. As he empathizes with victim Z, memory flashbacks expose that he was once the bully. This temporal cage gives him an opportunity to confront himself and achieve redemption.',
           headingProduction: 'Production',
           labelProducer: 'Producer',
@@ -957,18 +984,18 @@ originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Sci
           valProdDate: 'Mar. 30, 2025',
           quoteText: '“Suffering is not terrible;<br>escape is what terrifies us most.”',
           quoteCite: '— Crime and Punishment',
-          voiceoverLabel: 'VC GuXing'
+          voiceoverLabel: 'VC Lin Jingtao'
         },
         zh: {
           skipIntro: '跳过片头',
-          eyebrow: '《无法逃离的星期八》季延中学科学文化艺术节微视频制作',
+          eyebrow: '《无法逃离的星期六》季延中学科学文化艺术节微视频制作',
           synopsis: '周六放学铃声响起，沉迷手游的少年顾醒急于回家双排，却为何被困无限循环的教学楼？他究竟要怎样才能打破这无尽的困境？这场时空牢笼，又会如何改变他？',
           playBtn: '播放',
           scrollPrompt: '向下滚动继续',
           originDates: '时间：2025.3.2-3.9',
           originLocation: '地点：主教学楼 高二8班（2026届）',
           originP1: '课堂上，一个小小的灵感突然冒了出来 —— 时间囚笼。我当时就觉得这个设定很有意思，一直想召集同学们一起拍一部短片，而影视创作也是我从未接触过的全新领域。和几位同学讨论过后，大家都觉得这个故事值得尝试。整个团队格外齐心：有创意的同学贡献想法，愿意参演的人牺牲周末时间参与拍摄，物理老师也友情客串，众人合力，才有了最终的成片。',
-          originP2: '《无法逃离的星期八》原本是学校科学文化艺术节的参赛作品。似乎没人料到高二 8 班能完成这样体量的短片。作品完成后，被校方以影响不好曾被临时下架。当年本届科艺节最终也没有开展评奖。',
+          originP2: '《无法逃离的星期六》原本是学校科学文化艺术节的参赛作品。似乎没人料到高二 8 班能完成这样体量的短片。作品完成后，被校方以影响不好曾被临时下架。当年本届科艺节最终也没有开展评奖。',
           headingCast: '演职人员',
           labelScreenplay: '编剧',
           valScreenplay: '蔡誉豪 丁浩轩',
@@ -979,7 +1006,7 @@ originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Sci
           labelAdvisor: '指导',
           valAdvisor: '蔡安霖',
           labelCast: '主演',
-          valCast: '顾醒：林敬焘 · 蔡源凯<br>连雨泽 · 陈俊杰<br>曾智敏 · 曹郑凯',
+          valCast: '林敬焘 饰 顾醒<br>蔡源凯 饰 Z<br>连雨泽 · 陈俊杰<br>曾智敏 · 曹郑凯',
           labelExtras: '群演',
           valExtras: '杨鸿鑫 · 张裔<br>颜子宏 · 蔡恩博<br>陈子濠 · 陈俊祥<br>丁浩轩',
           headingStory: '故事简介',
@@ -992,7 +1019,7 @@ originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Sci
           valProdDate: '三月 30, 2025',
           quoteText: '痛苦并不可怕，<br>逃避才是最可怕的。',
           quoteCite: '——《罪与罚》',
-          voiceoverLabel: '顾醒 配音'
+          voiceoverLabel: '林敬焘 配音'
         }
       };
 
@@ -1045,7 +1072,7 @@ originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Sci
       if (quoteAudioBtn && quoteAudio) {
         quoteAudioBtn.addEventListener('click', () => {
           if (quoteAudio.paused) {
-            quoteAudio.play().catch(() => {});
+            quoteAudio.play().catch(() => { });
           } else {
             quoteAudio.pause();
           }
@@ -1091,7 +1118,7 @@ originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Sci
           introVideo.pause();
           introVideo.removeAttribute('src');
           introVideo.load();
-        } catch (err) {}
+        } catch (err) { }
 
         videoLayer.classList.add('hidden');
         body.classList.remove('locked');
@@ -1286,4 +1313,5 @@ originP2: 'We submitted The Unescapable Eighth Day of the Week to the school Sci
     })();
   </script>
 </body>
+
 </html>
